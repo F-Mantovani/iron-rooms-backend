@@ -8,6 +8,8 @@ const server = express()
 server.use(express.json())
 server.use(cors())
 
+server.use('/auth', require('./routes/auth.routes'))
+
 server.use('/rooms', require('./routes/rooms.routes.js'))
 
 server.listen(process.env.PORT, () => {console.log(`Server running on ${process.env.PORT}`)})
