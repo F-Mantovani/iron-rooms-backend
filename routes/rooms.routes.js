@@ -1,4 +1,5 @@
-const { Router } = require('express')
+const { Router } = require('express');
+const uploadCloud = require('../config/cloudinary.config');
 const Room = require('../models/Room');
 const User = require('../models/User');
 
@@ -13,7 +14,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(newRoom);
   } catch (error) {
     res.status(500).json({error: error.message})  
-  };
+  }
 });
 
 router.get('/', async (req, res) => {
@@ -60,8 +61,23 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-router.post('/:id', async (req, res) => {
-  
-})
+router.post('/:id', uploadCloud.single('imageUrl'),async (req, res) => {
+  const { path } = req.file
+  const { id } = req.params
+  const { userId } = req.user
+  try {
+    const updateRoom = await Room.findOneAndUpdate({_id: id, user: userId}, { imageUrl: path}, { new: true })
+    console.log(updateRoom)
+    if(!updateRoom) {
+      const error = new Error
+      error.status = 401
+      error.message = "You cannot upload images in other's rooms"
+      throw error
+    }
+    res.status(200).json(updateRoom)
+  } catch (error) {
+    res.status(error.status || 500).json({ Error: error.message })
+  }
+});
 
 module.exports = router
