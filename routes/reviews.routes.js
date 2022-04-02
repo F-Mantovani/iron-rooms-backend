@@ -23,6 +23,25 @@ router.post('/:id', async (req, res) => {
   } catch (error) {
     res.status(error.status || 500).json({ Error: error.message })
   }
+});
+
+router.delete('/:id', async (req, res) => {
+  const { id } = req.params
+  const { userId } = req.user
+  try {
+    const review = await Reviews.findOne({_id:  id, user: userId})
+    if(!review) {
+      const error = new Error
+      error.status = 401
+      error.message = "You cannot delete other's reviews"
+      throw error
+    }
+    const roomUpdate = await Room.findOneAndUpdate({ reviews: id }, {$pull: { reviews: id }})
+    await review.delete()
+    res.status(200).json(roomUpdate)
+  } catch (error) {
+    res.status(error.status || 500).json({ Error: error.message })
+  }
 })
 
 module.exports = router
