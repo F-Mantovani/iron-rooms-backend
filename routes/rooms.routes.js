@@ -4,7 +4,7 @@ const User = require('../models/User');
 
 const router = Router();
 
-router.post('/create', async (req, res) => {
+router.post('/', async (req, res) => {
   const { name, description } = req.body;
   const { userId } = req.user;
   try {
@@ -25,7 +25,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.put('/:id/update', async (req, res) => {
+router.put('/:id', async (req, res) => {
   const { id } = req.params
   const { name, description } = req.body
   const { userId } = req.user
@@ -59,5 +59,9 @@ router.delete('/:id', async (req, res) => {
     res.status(error.status || 500).json({error: error.message})
   }
 });
+
+router.post('/:id', async (req, res) => {
+  
+})
 
 module.exports = router
