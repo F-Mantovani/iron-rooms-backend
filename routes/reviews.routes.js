@@ -42,6 +42,23 @@ router.delete('/:id', async (req, res) => {
   } catch (error) {
     res.status(error.status || 500).json({ Error: error.message })
   }
-})
+});
 
-module.exports = router
+router.put('/:id', async (req, res) => {
+  const { id } = req.params
+  const{ userId } = req.user
+  try {
+    const review = await Reviews.findOneAndUpdate({_id: id, user: userId}, req.body, { new: true})
+    if(!review) {
+      const error = new Error
+      error.status = 401
+      error.message = "You cannot update other's review"
+      throw error
+    }
+    res.status(200).json(review)
+  } catch (error) {
+    res.status(error.status || 500).json({Error: error.message})
+  }
+});
+
+module.exports = router;
