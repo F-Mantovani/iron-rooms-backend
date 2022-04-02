@@ -17,7 +17,7 @@ router.post('/:id', async (req, res) => {
       error.message = "You cannot review your own room"
       throw error
     }
-    const newReview = await Reviews.create(req.body)
+    const newReview = await Reviews.create({...req.body, user: userId })
     const updatedRoom = await Room.findByIdAndUpdate(id, {$push: {reviews: newReview._id}}, {new: true}).populate('reviews')
     res.status(200).json(updatedRoom)
   } catch (error) {
