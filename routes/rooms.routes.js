@@ -1,11 +1,15 @@
 const { Router } = require('express')
-const Room = require('../models/Room')
+const Room = require('../models/Room');
+const User = require('../models/User');
 
 const router = Router();
 
 router.post('/create', async (req, res) => {
+  const { name, description } = req.body
+  const { userId } = req.user
   try {
-    const newRoom = await Room.create(req.body)
+    const newRoom = await Room.create({ name, description, user: userId})
+    const user = await User.findByIdAndUpdate(userId, {$push: { rooms: newRoom._id }})
     res.status(201).json(newRoom)
   } catch (error) {
     res.status(500).json({error: error.message})  
@@ -15,6 +19,7 @@ router.post('/create', async (req, res) => {
 router.get('/', async (req, res) => {
   try {
     const allRooms = await Room.find()
+    console.log(req.user)
     res.status(200).json(allRooms)
   } catch (error) {
     res.status(500).json({error: error.message})

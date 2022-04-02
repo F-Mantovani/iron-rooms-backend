@@ -9,7 +9,9 @@ const userSchema = new Schema(
       required: true,
       match: /[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+/,
       lowercase: true,
-    }
+    },
+    rooms: [{ type: Schema.Types.ObjectId, ref: "Rooms"}],
+    image: { type: String }
   },
   { timestamps: true }
 );
